@@ -99,3 +99,33 @@ He creado dos historias de usuario detalladas en formato markdown dentro de la c
 2. `backend/requisitos/HU002_PUT_candidates_stage.md`: Contiene la historia de usuario mejorada para actualizar la etapa de un candidato.
 
 Ambos archivos incluyen descripciones completas, detalles técnicos, criterios de aceptación, requisitos no funcionales y toda la información necesaria para que un desarrollador pueda implementar las funcionalidades de manera autónoma.
+
+## Prompt 3
+**Fecha:** 26/04/2025
+**Modelo:** Claude 3.7 Sonnet
+
+**Usuario:**
+Eres un experto en backend.
+Vamos a proceder a crear todo el código backend para @HU001_GET_positions_candidates.md .
+Si es necesario algún cambio en base de datos, hazlo tambien.
+El objetivo es completar la historia de usuario solicitada.
+Por último, registra tanto el prompt como la respuesta siguiendo @instrucciones.md en el fichero @prompts-LBN.md 
+
+**Asistente:**
+He implementado el código backend necesario para completar la historia de usuario HU001_GET_positions_candidates.md. A continuación, detallo los archivos creados o modificados:
+
+1. **Servicio de posiciones**: Creado el archivo `backend/src/application/services/positionService.ts` con la función `getCandidatesByPosition` que consulta la base de datos y formatea los datos según lo requerido, incluyendo el cálculo de puntuaciones medias.
+
+2. **Controlador de posiciones**: Creado el archivo `backend/src/presentation/controllers/positionController.ts` con el controlador `getCandidatesByPositionController` que maneja la validación de parámetros y respuestas HTTP.
+
+3. **Rutas de posiciones**: Creado el archivo `backend/src/routes/positionRoutes.ts` que define la ruta `/positions/:id/candidates`.
+
+4. **Actualización del archivo principal**: Modificado `backend/src/index.ts` para incluir las nuevas rutas de posiciones.
+
+5. **Documentación API**: Actualizado `backend/api-spec.yaml` con la documentación del nuevo endpoint.
+
+6. **Tests unitarios**: Creado el archivo `backend/src/tests/positions/getCandidatesByPosition.test.ts` con pruebas para validar el funcionamiento del endpoint.
+
+No fue necesario realizar cambios en la base de datos, ya que el esquema existente ya contiene todas las tablas y relaciones necesarias para implementar esta funcionalidad (Position, Application, Candidate, InterviewStep e Interview).
+
+El endpoint implementado permite obtener todos los candidatos de una posición específica, incluyendo su información personal, la etapa actual del proceso y la puntuación media calculada a partir de sus entrevistas.
