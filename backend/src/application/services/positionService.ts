@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+// Creamos una instancia por defecto
+const defaultPrisma = new PrismaClient();
 
 /**
  * Interfaz para la estructura de Interview
@@ -37,12 +38,13 @@ interface Application {
 /**
  * Obtiene los candidatos para una posición específica con sus datos y puntuaciones
  * @param positionId ID de la posición
+ * @param prismaClient Opcional: Instancia de PrismaClient para testing
  * @returns Datos de la posición con sus candidatos
  */
-export const getCandidatesByPosition = async (positionId: number) => {
+export const getCandidatesByPosition = async (positionId: number, prismaClient = defaultPrisma) => {
   try {
     // Verificar si la posición existe
-    const position = await prisma.position.findUnique({
+    const position = await prismaClient.position.findUnique({
       where: { id: positionId }
     });
 
@@ -51,7 +53,7 @@ export const getCandidatesByPosition = async (positionId: number) => {
     }
 
     // Obtener la posición con todas las aplicaciones y datos relacionados
-    const positionWithCandidates = await prisma.position.findUnique({
+    const positionWithCandidates = await prismaClient.position.findUnique({
       where: { id: positionId },
       select: {
         id: true,

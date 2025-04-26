@@ -1,6 +1,13 @@
 import { getCandidatesByPosition } from '../../application/services/positionService';
 import { PrismaClient } from '@prisma/client';
 
+// Interfaz para mock de PrismaClient
+interface MockPrismaClient {
+  position: {
+    findUnique: jest.Mock;
+  };
+}
+
 // Mock de Prisma
 jest.mock('@prisma/client', () => {
   const mockPosition = {
@@ -56,7 +63,7 @@ jest.mock('@prisma/client', () => {
         findUnique: jest.fn().mockImplementation(function(params) {
           const where = params.where;
           if (where.id === 123) {
-            if (where.id === 123 && params.select) {
+            if (params.select) {
               // Para la segunda llamada con select
               return Promise.resolve({
                 id: mockPosition.id,
@@ -75,15 +82,15 @@ jest.mock('@prisma/client', () => {
 });
 
 describe('getCandidatesByPosition', () => {
-  let prisma: PrismaClient;
+  let prisma: MockPrismaClient;
 
   beforeEach(() => {
-    prisma = new PrismaClient();
+    prisma = new PrismaClient() as unknown as MockPrismaClient;
     jest.clearAllMocks();
   });
 
   it('should return candidates for a valid position', async () => {
-    const result = await getCandidatesByPosition(123);
+    const result = await getCandidatesByPosition(123, prisma);
     
     expect(result).toEqual({
       positionId: 123,
@@ -121,6 +128,6 @@ describe('getCandidatesByPosition', () => {
   });
 
   it('should throw an error for a non-existent position', async () => {
-    await expect(getCandidatesByPosition(999)).rejects.toThrow('Position not found');
+    await expect(getCandidatesByPosition(999, prisma)).rejects.toThrow('Position not found');
   });
 }); 

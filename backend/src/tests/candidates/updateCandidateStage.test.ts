@@ -85,7 +85,7 @@ describe('updateCandidateStage', () => {
       applicationId: 789,
       interviewStepId: 3,
       notes: 'Updated to final interview'
-    });
+    }, prisma);
     
     expect(result.success).toBe(true);
     expect(result.application.currentInterviewStep.id).toBe(3);
@@ -98,19 +98,21 @@ describe('updateCandidateStage', () => {
     await expect(updateCandidateStage(999, {
       applicationId: 789,
       interviewStepId: 3
-    })).rejects.toThrow('Candidate not found');
+    }, prisma)).rejects.toThrow('Candidate not found');
   });
 
   it('should throw an error for a non-existent application', async () => {
+    prisma.candidate.findUnique.mockResolvedValue(mockCandidate);
     prisma.application.findUnique.mockResolvedValue(null);
     
     await expect(updateCandidateStage(456, {
       applicationId: 999,
       interviewStepId: 3
-    })).rejects.toThrow('Application not found');
+    }, prisma)).rejects.toThrow('Application not found');
   });
 
   it('should throw an error if the application does not belong to the candidate', async () => {
+    prisma.candidate.findUnique.mockResolvedValue(mockCandidate);
     prisma.application.findUnique.mockResolvedValue({
       ...mockApplication,
       candidateId: 789 // ID diferente al candidato especificado
@@ -119,13 +121,26 @@ describe('updateCandidateStage', () => {
     await expect(updateCandidateStage(456, {
       applicationId: 789,
       interviewStepId: 3
-    })).rejects.toThrow('Application does not belong to this candidate');
+    }, prisma)).rejects.toThrow('Application does not belong to this candidate');
   });
 
   it('should throw an error if the interview step is not valid', async () => {
+    prisma.candidate.findUnique.mockResolvedValue(mockCandidate);
+    const appWithoutValidStep = {
+      ...mockApplication,
+      position: {
+        ...mockApplication.position,
+        interviewFlow: {
+          ...mockApplication.position.interviewFlow,
+          interviewSteps: mockInterviewSteps.filter(step => step.id !== 999)
+        }
+      }
+    };
+    prisma.application.findUnique.mockResolvedValue(appWithoutValidStep);
+    
     await expect(updateCandidateStage(456, {
       applicationId: 789,
       interviewStepId: 999 // ID de etapa inválido
-    })).rejects.toThrow('Interview step is not valid for this position');
+    }, prisma)).rejects.toThrow('Interview step is not valid for this position');
   });
 }); 

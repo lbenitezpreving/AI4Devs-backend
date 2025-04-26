@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+// Creamos una instancia por defecto
+const defaultPrisma = new PrismaClient();
 
 /**
  * Interfaz para los datos de actualización de la etapa de un candidato
@@ -26,12 +27,13 @@ interface InterviewStep {
  * Actualiza la etapa de entrevista de un candidato en una aplicación específica
  * @param candidateId ID del candidato
  * @param applicationData Datos de la actualización (applicationId, interviewStepId, notes)
+ * @param prismaClient Opcional: Instancia de PrismaClient para testing
  * @returns Datos de la aplicación actualizada con la etapa anterior y actual
  */
-export const updateCandidateStage = async (candidateId: number, applicationData: UpdateCandidateStageData) => {
+export const updateCandidateStage = async (candidateId: number, applicationData: UpdateCandidateStageData, prismaClient = defaultPrisma) => {
   try {
     // Verificar que el candidato existe
-    const candidate = await prisma.candidate.findUnique({
+    const candidate = await prismaClient.candidate.findUnique({
       where: { id: candidateId }
     });
 
@@ -40,7 +42,7 @@ export const updateCandidateStage = async (candidateId: number, applicationData:
     }
 
     // Obtener la aplicación y verificar que pertenece al candidato
-    const application = await prisma.application.findUnique({
+    const application = await prismaClient.application.findUnique({
       where: { id: applicationData.applicationId },
       include: {
         candidate: true,
@@ -78,7 +80,7 @@ export const updateCandidateStage = async (candidateId: number, applicationData:
     const previousStep = application.interviewStep;
 
     // Actualizar la aplicación
-    const updatedApplication = await prisma.application.update({
+    const updatedApplication = await prismaClient.application.update({
       where: { id: applicationData.applicationId },
       data: {
         currentInterviewStep: applicationData.interviewStepId,
