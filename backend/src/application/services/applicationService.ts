@@ -12,6 +12,17 @@ interface UpdateCandidateStageData {
 }
 
 /**
+ * Interfaz para la estructura de InterviewStep
+ */
+interface InterviewStep {
+  id: number;
+  name: string;
+  interviewFlowId: number;
+  interviewTypeId: number;
+  orderIndex: number;
+}
+
+/**
  * Actualiza la etapa de entrevista de un candidato en una aplicación específica
  * @param candidateId ID del candidato
  * @param applicationData Datos de la actualización (applicationId, interviewStepId, notes)
@@ -57,7 +68,7 @@ export const updateCandidateStage = async (candidateId: number, applicationData:
 
     // Verificar que la nueva etapa existe en el flujo de entrevistas de la posición
     const isValidStep = application.position.interviewFlow.interviewSteps
-      .some(step => step.id === applicationData.interviewStepId);
+      .some((step: InterviewStep) => step.id === applicationData.interviewStepId);
 
     if (!isValidStep) {
       throw new Error('Interview step is not valid for this position');

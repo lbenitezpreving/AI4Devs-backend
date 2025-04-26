@@ -3,6 +3,38 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 /**
+ * Interfaz para la estructura de Interview
+ */
+interface Interview {
+  id: number;
+  interviewDate: Date;
+  score: number | null;
+  interviewStep: {
+    id: number;
+    name: string;
+  };
+}
+
+/**
+ * Interfaz para la estructura de Application
+ */
+interface Application {
+  id: number;
+  applicationDate: Date;
+  candidate: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  interviewStep: {
+    id: number;
+    name: string;
+  };
+  interviews: Interview[];
+}
+
+/**
  * Obtiene los candidatos para una posición específica con sus datos y puntuaciones
  * @param positionId ID de la posición
  * @returns Datos de la posición con sus candidatos
@@ -50,14 +82,14 @@ export const getCandidatesByPosition = async (positionId: number) => {
       positionId: position.id,
       positionTitle: position.title,
       totalCandidates: positionWithCandidates?.applications.length || 0,
-      candidates: positionWithCandidates?.applications.map(application => {
+      candidates: positionWithCandidates?.applications.map((application: Application) => {
         // Calcular la puntuación media
         const scores = application.interviews
-          .filter(interview => interview.score !== null)
-          .map(interview => interview.score as number);
+          .filter((interview: Interview) => interview.score !== null)
+          .map((interview: Interview) => interview.score as number);
         
         const averageScore = scores.length > 0 
-          ? parseFloat((scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1))
+          ? parseFloat((scores.reduce((a: number, b: number) => a + b, 0) / scores.length).toFixed(1))
           : null;
 
         return {
@@ -71,7 +103,7 @@ export const getCandidatesByPosition = async (positionId: number) => {
             name: application.interviewStep.name
           },
           averageScore,
-          interviews: application.interviews.map(interview => ({
+          interviews: application.interviews.map((interview: Interview) => ({
             id: interview.id,
             stepName: interview.interviewStep.name,
             date: interview.interviewDate,

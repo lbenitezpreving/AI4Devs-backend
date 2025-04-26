@@ -53,9 +53,10 @@ jest.mock('@prisma/client', () => {
   return {
     PrismaClient: jest.fn().mockImplementation(() => ({
       position: {
-        findUnique: jest.fn().mockImplementation(({ where }) => {
+        findUnique: jest.fn().mockImplementation(function(params) {
+          const where = params.where;
           if (where.id === 123) {
-            if (where.id === 123 && arguments[0]?.select) {
+            if (where.id === 123 && params.select) {
               // Para la segunda llamada con select
               return Promise.resolve({
                 id: mockPosition.id,
