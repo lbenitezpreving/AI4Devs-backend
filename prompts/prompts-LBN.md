@@ -129,3 +129,36 @@ He implementado el código backend necesario para completar la historia de usuar
 No fue necesario realizar cambios en la base de datos, ya que el esquema existente ya contiene todas las tablas y relaciones necesarias para implementar esta funcionalidad (Position, Application, Candidate, InterviewStep e Interview).
 
 El endpoint implementado permite obtener todos los candidatos de una posición específica, incluyendo su información personal, la etapa actual del proceso y la puntuación media calculada a partir de sus entrevistas.
+
+## Prompt 4
+**Fecha:** 26/04/2025
+**Modelo:** Claude 3.7 Sonnet
+
+**Usuario:**
+Eres un experto en backend.
+Vamos a proceder a crear todo el código backend para @HU002_PUT_candidates_stage.md 
+Si es necesario algún cambio en base de datos, hazlo tambien.
+El objetivo es completar la historia de usuario solicitada.
+Por último, registra tanto el prompt como la respuesta siguiendo @instrucciones.md  en el fichero @prompts-LBN.md 
+
+**Asistente:**
+He implementado el código backend necesario para completar la historia de usuario HU002_PUT_candidates_stage.md. A continuación, detallo los archivos creados o modificados:
+
+1. **Servicio de aplicaciones**: Creado el archivo `backend/src/application/services/applicationService.ts` con la función `updateCandidateStage` que actualiza la etapa de un candidato en una aplicación específica.
+
+2. **Controlador de candidatos**: Actualizado el archivo `backend/src/presentation/controllers/candidateController.ts` para añadir el controlador `updateCandidateStageController` que maneja la validación de parámetros y respuestas HTTP.
+
+3. **Rutas de candidatos**: Actualizado el archivo `backend/src/routes/candidateRoutes.ts` para agregar el endpoint `PUT /candidates/:id/stage`.
+
+4. **Documentación API**: Actualizado `backend/api-spec.yaml` con la documentación del nuevo endpoint.
+
+5. **Tests unitarios**: Creado el archivo `backend/src/tests/candidates/updateCandidateStage.test.ts` con pruebas para validar el funcionamiento del endpoint.
+
+No fue necesario realizar cambios en la base de datos, ya que el esquema existente ya contiene todas las tablas y relaciones necesarias para implementar esta funcionalidad. La entidad `Application` ya tiene el campo `currentInterviewStep` que permite registrar en qué etapa del proceso se encuentra un candidato.
+
+El endpoint implementado valida que:
+- El candidato existe
+- La aplicación pertenece al candidato
+- La nueva etapa de entrevista es válida dentro del flujo de entrevistas de la posición
+
+Esta funcionalidad permite a los reclutadores actualizar eficientemente el progreso de los candidatos a través del proceso de selección y mantener un seguimiento preciso del estado de cada candidato.

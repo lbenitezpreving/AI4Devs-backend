@@ -275,4 +275,88 @@ paths:
           description: Invalid file type, only PDF and DOCX are allowed
         '500':
           description: Error during the file upload process
+  /candidates/{id}/stage:
+    put:
+      summary: Update candidate interview stage
+      description: Updates the current interview step of a candidate in the recruitment process
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The candidate ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - applicationId
+                - interviewStepId
+              properties:
+                applicationId:
+                  type: integer
+                  description: The ID of the application to update
+                interviewStepId:
+                  type: integer
+                  description: The ID of the new interview step
+                notes:
+                  type: string
+                  description: Optional notes about the stage change
+      responses:
+        '200':
+          description: Candidate stage updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the update was successful
+                  application:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The ID of the application
+                      candidateId:
+                        type: integer
+                        description: The ID of the candidate
+                      positionId:
+                        type: integer
+                        description: The ID of the position
+                      currentInterviewStep:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            description: The ID of the current interview step
+                          name:
+                            type: string
+                            description: The name of the current interview step
+                      previousInterviewStep:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            description: The ID of the previous interview step
+                          name:
+                            type: string
+                            description: The name of the previous interview step
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        description: When the update occurred
+                      notes:
+                        type: string
+                        description: Notes about the stage change
+        '400':
+          description: Bad request (invalid input, application doesn't belong to candidate, or invalid interview step)
+        '404':
+          description: Candidate or application not found
+        '500':
+          description: Internal server error
 
